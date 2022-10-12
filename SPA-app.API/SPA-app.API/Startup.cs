@@ -1,5 +1,6 @@
 using FluentValidation;
 using FluentValidation.AspNetCore;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -29,11 +30,11 @@ namespace SPA_app.API
         [System.Obsolete]
         public void ConfigureServices(IServiceCollection services)
         {
-            services
-                .AddControllers();
-                //.AddFluentValidation(fvc => 
-                //    fvc.RegisterValidatorsFromAssemblyContaining<MessageOutValidator>()
-                //);
+            services.AddControllers();
+            //.AddFluentValidation(fvc => 
+            //    fvc.RegisterValidatorsFromAssemblyContaining<MessageOutValidator>()
+            //);
+            services.AddCors();
 
             services.AddDbContext<ConnectionBaseContext>(options =>
                 options
@@ -63,6 +64,8 @@ namespace SPA_app.API
             }
 
             app.UseRouting();
+
+            app.UseCors(builder => builder.AllowAnyOrigin());
 
             app.UseEndpoints(endpoints =>
             {

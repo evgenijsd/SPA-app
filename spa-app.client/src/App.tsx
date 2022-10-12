@@ -5,12 +5,12 @@ import { MessageChain } from './pages/MessageChain';
 
 function App() {
   return (
-    <div>
+    <>
       <Routes>
         <Route path="/" element={<MainPage />} />
         <Route path="/message/:id" element={<MessageChain />} />
       </Routes>
-    </div>
+    </>
   );
 }
 
