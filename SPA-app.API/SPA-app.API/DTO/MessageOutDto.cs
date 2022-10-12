@@ -11,6 +11,8 @@ namespace SPA_app.API.DTO
 
         public Guid MessageId { get; set; }
 
+        public int Layer { get; set; }
+
         public string Name { get; set; }
 
         public string Email { get; set; }

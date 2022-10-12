@@ -9,7 +9,9 @@ namespace SPA_app.Domain.Interface
 {
     public interface IGenericRepository<T> where T : class
     {
-        Task<T> GetAsync(Expression<Func<T, bool>> expression,
+        Task<List<T>> GetAsync(Expression<Func<T, bool>> expression,
+                                              Func<IQueryable<T>, IIncludableQueryable<T, object>> include = null);
+        Task<T> GetOneAsync(Expression<Func<T, bool>> expression,
                                               Func<IQueryable<T>, IIncludableQueryable<T, object>> include = null);
         Task<T> GetByIdAsync(Guid id);
         Task<List<T>> GetAllAsync(Func<IQueryable<T>, IIncludableQueryable<T, object>> include = null);

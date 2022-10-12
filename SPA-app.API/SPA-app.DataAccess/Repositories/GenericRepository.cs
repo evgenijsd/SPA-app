@@ -20,8 +20,21 @@ namespace SPA_app.DataAccess.Repositories
             _entities = context.Set<T>();
         }
 
-        public virtual Task<T> GetAsync(Expression<Func<T, bool>> expression,
+        public virtual Task<List<T>> GetAsync(Expression<Func<T, bool>> expression,
                                               Func<IQueryable<T>, IIncludableQueryable<T, object>> include = null)
+        {
+            IQueryable<T> query = _entities.Where(expression);
+
+            if (include != null)
+            {
+                query = include(query);
+            }
+
+            return query.ToListAsync();
+        }
+
+        public virtual Task<T> GetOneAsync(Expression<Func<T, bool>> expression,
+                                      Func<IQueryable<T>, IIncludableQueryable<T, object>> include = null)
         {
             IQueryable<T> query = _entities.Where(expression);
 

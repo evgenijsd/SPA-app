@@ -13,6 +13,8 @@ using System.Threading.Tasks;
 
 namespace SPA_app.API.Controllers
 {
+    [Route("[controller]")]
+    [ApiController]
     public class MessageOutController : Controller
     {
         private IValidator<MessageOutDto> _validator;
@@ -42,6 +44,18 @@ namespace SPA_app.API.Controllers
             return Ok(result);
         }
 
+        [HttpGet("{id}")]
+        [ActionName("id")]
+        public async Task<IActionResult> GetByIdAsync(Guid id)
+        {
+            if (id == Guid.Empty)
+                return BadRequest();
+            var result = await _messageService.GetByIdAsync(id);
+            if (result == null)
+                return NotFound();
+            return Ok(result);
+        }
+
         [HttpPost("add")]
         [ActionName("add")]
         public async Task<IActionResult> AddAsync(MessageOutDto data)
@@ -49,13 +63,15 @@ namespace SPA_app.API.Controllers
             if (data == null)
                 return BadRequest();
 
-            if (!ModelState.IsValid)
+            ValidationResult result = await _validator.ValidateAsync(data);
+
+            if (!result.IsValid)
             {
+                //result.AddToModelState(this.ModelState);
+
                 return new BadRequestObjectResult(ModelState);
             }
-
-            data.Id = Guid.Empty;
-            data.Created = DateTime.Now;
+            
             var id = await _messageService.AddAsync(data);
             return Created($"{id}", id);
         }

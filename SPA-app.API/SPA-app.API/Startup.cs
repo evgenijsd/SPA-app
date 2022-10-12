@@ -30,10 +30,10 @@ namespace SPA_app.API
         public void ConfigureServices(IServiceCollection services)
         {
             services
-                .AddControllers()
-                .AddFluentValidation(fvc => 
-                    fvc.RegisterValidatorsFromAssemblyContaining<MessageOutValidator>()
-                );
+                .AddControllers();
+                //.AddFluentValidation(fvc => 
+                //    fvc.RegisterValidatorsFromAssemblyContaining<MessageOutValidator>()
+                //);
 
             services.AddDbContext<ConnectionBaseContext>(options =>
                 options
@@ -44,7 +44,8 @@ namespace SPA_app.API
             services.AddTransient(typeof(IGenericService<,>), typeof(GenericService<,>));
             services.AddTransient(typeof(IMessageOutService<>), typeof(MessageOutService<>));
 
-            services.AddScoped<IValidator<MessageOutDto>, MessageOutValidator>();
+            services.AddValidatorsFromAssemblyContaining<MessageOutValidator>();
+            ValidatorOptions.Global.LanguageManager.Enabled = false;
 
             services.AddSwaggerGen(c =>
             {

@@ -9,6 +9,8 @@ namespace SPA_app.Domain.Interface
     {
         Task<List<Tdto>> GetAllAsync();
 
+        Task<List<Tdto>> GetByIdAsync(Guid id);
+
         Task<Guid> AddAsync(Tdto data);
     }
 }

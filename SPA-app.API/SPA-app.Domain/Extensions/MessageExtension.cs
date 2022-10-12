@@ -30,7 +30,7 @@ namespace SPA_app.Domain.Extensions
             };
         }
 
-        public static MessageOut ToOut(this Message message)
+        public static MessageOut ToOut(this Message message, int layer = 0)
         {
             return new MessageOut()
             {
@@ -41,6 +41,7 @@ namespace SPA_app.Domain.Extensions
                 MessageId = message.MessageId,
                 Text = message.Text,
                 Created = message.Created,
+                Layer = layer
             };
         }
     }

@@ -32,7 +32,19 @@ namespace SPA_app.Domain.Service
 
             var config = new MapperConfiguration(cfg => cfg.CreateMap<MessageOut, Tdto>());
             var mapper = new Mapper(config);
-            return mapper.Map<IEnumerable<MessageOut> , List<Tdto>>(messagesOut);
+            return mapper.Map<IEnumerable<MessageOut>, List<Tdto>>(messagesOut);
+        }
+
+        public async Task<List<Tdto>> GetByIdAsync(Guid id)
+        {
+            var messages = await Messages.GetAsync(y => y.Id == id, x => x.Include(x => x.UserNavigation));
+            var messagesOut = messages.Select(x => x.ToOut()).ToList();
+
+            await LoadLayers(id, 0, messagesOut);
+
+            var config = new MapperConfiguration(cfg => cfg.CreateMap<MessageOut, Tdto>());
+            var mapper = new Mapper(config);
+            return mapper.Map<List<MessageOut>, List<Tdto>>(messagesOut);
         }
 
         public async Task<Guid> AddAsync(Tdto data)
@@ -44,8 +56,11 @@ namespace SPA_app.Domain.Service
 
             if (messageOut != null)
             {
+                messageOut.Id = Guid.Empty;
+                messageOut.Created = DateTime.Now;
+
                 message = messageOut.ToMessage();
-                var user = await Users.GetAsync(x => x.Name == messageOut.Name && x.Email == messageOut.Email);
+                var user = await Users.GetOneAsync(x => x.Name == messageOut.Name && x.Email == messageOut.Email);
 
                 if (user != null)
                 {
@@ -65,6 +80,23 @@ namespace SPA_app.Domain.Service
             }
             
             return message.Id;
+        }
+
+        private async Task LoadLayers(Guid id, int layer, List<MessageOut> messagesOut)
+        {
+            layer++;
+            var messages = await Messages.GetAsync(y => y.MessageId == id, x => x.Include(x => x.UserNavigation));
+
+            if (messages != null)
+            {
+                var messagesAdd = messages.Select(x => x.ToOut(layer)).OrderBy(x => x.Created);                           
+
+                foreach (var message in messagesAdd)
+                {
+                    messagesOut.Add(message);
+                    await LoadLayers(message.Id, layer, messagesOut);
+                }
+            }
         }
     }
 }
