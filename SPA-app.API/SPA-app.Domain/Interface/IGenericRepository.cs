@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore.Query;
+using SPA_app.Domain.Helpers;
 using SPA_app.Domain.Models;
 using System;
 using System.Collections.Generic;
@@ -10,8 +11,12 @@ namespace SPA_app.Domain.Interface
 {
     public interface IGenericRepository<T> where T : class
     {
-        Task<List<T>> GetAllAsync(Expression<Func<T, bool>> expression, PageParameters pageParameters,
-                                      Func<IQueryable<T>, IIncludableQueryable<T, object>> include = null);
+        Task<List<T>> GetAllAsync(
+            Expression<Func<T, bool>> expression, 
+            PageParameters pageParameters,
+            ref int count,
+            Func<IQueryable<T>, IIncludableQueryable<T, object>> include = null
+        );
 
         Task<List<T>> GetAllAsync(Func<IQueryable<T>, IIncludableQueryable<T, object>> include = null);
 

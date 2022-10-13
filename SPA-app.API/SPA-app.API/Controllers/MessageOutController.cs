@@ -3,6 +3,7 @@ using FluentValidation;
 using FluentValidation.Results;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using SPA_app.API.DTO;
 using SPA_app.API.Validators;
 using SPA_app.Domain.Entities;
@@ -42,6 +43,8 @@ namespace SPA_app.API.Controllers
             var result = await _messageService.GetAllAsync(pageParameters);
             if (result == null)
                 return NotFound();
+
+            Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(result.Metadata));
             return Ok(result);
         }
 
@@ -54,6 +57,8 @@ namespace SPA_app.API.Controllers
             var result = await _messageService.GetByIdAsync(id, pageParameters);
             if (result == null)
                 return NotFound();
+
+            Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(result.Metadata));
             return Ok(result);
         }
 

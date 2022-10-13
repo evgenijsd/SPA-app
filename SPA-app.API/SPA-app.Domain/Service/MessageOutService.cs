@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using SPA_app.Domain.Entities;
 using SPA_app.Domain.Extensions;
+using SPA_app.Domain.Helpers;
 using SPA_app.Domain.Interface;
 using SPA_app.Domain.Models;
 using System;
@@ -27,30 +28,50 @@ namespace SPA_app.Domain.Service
             _messages = _unitOfWork.GetRepository<Message>();
         }
 
-        public async Task<List<Tdto>> GetAllAsync(PageParameters pageParameters)
+        public async Task<PagedList<Tdto>> GetAllAsync(PageParameters pageParameters)
         {
-            var messages = await Messages.GetAllAsync(y => y.MessageId == Guid.Empty, 
-                pageParameters, x => x.Include(x => x.UserNavigation));
+            int count = 0;
+
+            var messages = await Messages.GetAllAsync(
+                y => y.MessageId == Guid.Empty, 
+                pageParameters, 
+                ref count, 
+                x => x.Include(x => x.UserNavigation)
+            );
 
             var messagesOut = messages.Select(x => x.ToOut());           
 
             var config = new MapperConfiguration(cfg => cfg.CreateMap<MessageOut, Tdto>());
             var mapper = new Mapper(config);
-            return mapper.Map<IEnumerable<MessageOut>, List<Tdto>>(messagesOut);
+            return PagedList<Tdto>.ToPagedList(
+                mapper.Map<IEnumerable<MessageOut>, List<Tdto>>(messagesOut),
+                pageParameters.PageNumber,
+                pageParameters.PageSize,
+                count
+            );
         }
 
-        public async Task<List<Tdto>> GetByIdAsync(Guid id, PageParameters pageParameters)
+        public async Task<PagedList<Tdto>> GetByIdAsync(Guid id, PageParameters pageParameters)
         {
             var messages = await Messages.GetAsync(y => y.Id == id, x => x.Include(x => x.UserNavigation));
             var messagesOut = messages.Select(x => x.ToOut()).ToList();
-
+            
             await LoadLayers(id, 0, messagesOut);
+            int count = messagesOut.Count();
 
             var config = new MapperConfiguration(cfg => cfg.CreateMap<MessageOut, Tdto>());
             var mapper = new Mapper(config);
-            return mapper.Map<IEnumerable<MessageOut>, List<Tdto>>(messagesOut
-                .Skip((pageParameters.PageNumber - 1) * pageParameters.PageSize)
-                .Take(pageParameters.PageSize));
+
+            return PagedList<Tdto>.ToPagedList(
+                mapper.Map<IEnumerable<MessageOut>, List<Tdto>>(
+                    messagesOut
+                        .Skip((pageParameters.PageNumber - 1) * pageParameters.PageSize)
+                        .Take(pageParameters.PageSize)
+                ),
+                pageParameters.PageNumber,
+                pageParameters.PageSize,
+                count
+            );
         }
 
         public async Task<Guid> AddAsync(Tdto data)
