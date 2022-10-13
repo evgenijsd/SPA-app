@@ -7,6 +7,7 @@ using SPA_app.API.DTO;
 using SPA_app.API.Validators;
 using SPA_app.Domain.Entities;
 using SPA_app.Domain.Interface;
+using SPA_app.Domain.Models;
 using SPA_app.Domain.Service.Interface;
 using System;
 using System.Threading.Tasks;
@@ -36,9 +37,9 @@ namespace SPA_app.API.Controllers
 
         [HttpGet("all")]
         [ActionName("all")]
-        public async Task<IActionResult> Get()
+        public async Task<IActionResult> Get([FromQuery]PageParameters pageParameters)
         {
-            var result = await _messageService.GetAllAsync();
+            var result = await _messageService.GetAllAsync(pageParameters);
             if (result == null)
                 return NotFound();
             return Ok(result);
@@ -46,11 +47,11 @@ namespace SPA_app.API.Controllers
 
         [HttpGet("{id}")]
         [ActionName("id")]
-        public async Task<IActionResult> GetByIdAsync(Guid id)
+        public async Task<IActionResult> GetByIdAsync(Guid id, [FromQuery] PageParameters pageParameters)
         {
             if (id == Guid.Empty)
                 return BadRequest();
-            var result = await _messageService.GetByIdAsync(id);
+            var result = await _messageService.GetByIdAsync(id, pageParameters);
             if (result == null)
                 return NotFound();
             return Ok(result);

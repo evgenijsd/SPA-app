@@ -20,11 +20,11 @@ export const messageSlice = createSlice({
         fetching(state) {
             state.loading = true
         },
-        fetchSuccess(state, action: PayloadAction<IMessage[]>) {
+        fetchingSuccess(state, action: PayloadAction<IMessage[]>) {
             state.loading = false
             state.messages = action.payload
         },
-        fetchError(state, action: PayloadAction<Error>) {
+        fetchingError(state, action: PayloadAction<Error>) {
             state.loading = false
             state.error = action.payload.message
         }

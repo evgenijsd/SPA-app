@@ -3,7 +3,7 @@ import { combineReducers } from "redux";
 import messageReducer from './slices/messageSlice'
 
 const rootReducer = combineReducers({
-    message: messageReducer
+    messageReducer,
 })
 
 export function setupStore() {

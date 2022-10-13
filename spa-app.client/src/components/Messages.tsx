@@ -1,9 +1,14 @@
 import React from 'react';
+import { IMessage } from '../models/models';
 
-export function Messages() {
+interface MessageProps {
+    message: IMessage
+}
+
+export function Messages({ message }: MessageProps) {
     return (
         <div className='container mx-auto max-w-[760px] pt-5'>
-            messages
+            {message.name}
         </div>
     )
 }

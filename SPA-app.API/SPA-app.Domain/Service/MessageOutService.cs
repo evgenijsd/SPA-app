@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using SPA_app.Domain.Entities;
 using SPA_app.Domain.Extensions;
 using SPA_app.Domain.Interface;
+using SPA_app.Domain.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -25,9 +26,12 @@ namespace SPA_app.Domain.Service
             _users = _unitOfWork.GetRepository<User>();
             _messages = _unitOfWork.GetRepository<Message>();
         }
-        public async Task<List<Tdto>> GetAllAsync()
+
+        public async Task<List<Tdto>> GetAllAsync(PageParameters pageParameters)
         {
-            var messages = await Messages.GetAllAsync(x => x.Include(x => x.UserNavigation));
+            var messages = await Messages.GetAllAsync(y => y.MessageId == Guid.Empty, 
+                pageParameters, x => x.Include(x => x.UserNavigation));
+
             var messagesOut = messages.Select(x => x.ToOut());           
 
             var config = new MapperConfiguration(cfg => cfg.CreateMap<MessageOut, Tdto>());
@@ -35,7 +39,7 @@ namespace SPA_app.Domain.Service
             return mapper.Map<IEnumerable<MessageOut>, List<Tdto>>(messagesOut);
         }
 
-        public async Task<List<Tdto>> GetByIdAsync(Guid id)
+        public async Task<List<Tdto>> GetByIdAsync(Guid id, PageParameters pageParameters)
         {
             var messages = await Messages.GetAsync(y => y.Id == id, x => x.Include(x => x.UserNavigation));
             var messagesOut = messages.Select(x => x.ToOut()).ToList();
@@ -44,7 +48,9 @@ namespace SPA_app.Domain.Service
 
             var config = new MapperConfiguration(cfg => cfg.CreateMap<MessageOut, Tdto>());
             var mapper = new Mapper(config);
-            return mapper.Map<List<MessageOut>, List<Tdto>>(messagesOut);
+            return mapper.Map<IEnumerable<MessageOut>, List<Tdto>>(messagesOut
+                .Skip((pageParameters.PageNumber - 1) * pageParameters.PageSize)
+                .Take(pageParameters.PageSize));
         }
 
         public async Task<Guid> AddAsync(Tdto data)
