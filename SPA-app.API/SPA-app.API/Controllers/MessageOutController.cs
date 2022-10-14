@@ -5,8 +5,10 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using SPA_app.API.DTO;
+using SPA_app.API.Pagination;
 using SPA_app.API.Validators;
 using SPA_app.Domain.Entities;
+using SPA_app.Domain.Helpers;
 using SPA_app.Domain.Interface;
 using SPA_app.Domain.Models;
 using SPA_app.Domain.Service.Interface;
@@ -44,8 +46,7 @@ namespace SPA_app.API.Controllers
             if (result == null)
                 return NotFound();
 
-            Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(result.Metadata));
-            return Ok(result);
+            return Ok(result.ToOut());
         }
 
         [HttpGet("{id}")]
@@ -58,8 +59,7 @@ namespace SPA_app.API.Controllers
             if (result == null)
                 return NotFound();
 
-            Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(result.Metadata));
-            return Ok(result);
+            return Ok(result.ToOut());
         }
 
         [HttpPost("add")]
@@ -73,8 +73,6 @@ namespace SPA_app.API.Controllers
 
             if (!result.IsValid)
             {
-                //result.AddToModelState(this.ModelState);
-
                 return new BadRequestObjectResult(ModelState);
             }
             

@@ -1,7 +1,8 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit"
 import { IMessage } from "../../models/models"
+import { NIL as NIL_UUID } from 'uuid';
 
-interface MessageState {
+interface MessageChildState {
     loading: boolean
     error: string
     count: number
@@ -9,7 +10,7 @@ interface MessageState {
     messages: IMessage[]
 }
 
-const initialState: MessageState = {
+const initialState: MessageChildState = {
     loading: false,
     error: '',
     count: 0,
@@ -17,31 +18,31 @@ const initialState: MessageState = {
     messages: []
 }
 
-interface MessagePayload {
+interface MessageChildPayload {
     messages: IMessage[],
     pageCount: number,
     count: number
 }
 
-export const messageSlice = createSlice({
-    name: 'message',
+export const messageChildSlice = createSlice({
+    name: 'messageChild',
     initialState,
     reducers: {
-        fetching(state) {
+        fetchingChild(state) {
             state.loading = true
         },
-        fetchingSuccess(state, action: PayloadAction<MessagePayload>) {
+        fetchingChildSuccess(state, action: PayloadAction<MessageChildPayload>) {
             state.loading = false
             state.messages = action.payload.messages
             state.count = action.payload.count
             state.pageCount = action.payload.pageCount
             state.error = ''
         },
-        fetchingError(state, action: PayloadAction<Error>) {
+        fetchingChildError(state, action: PayloadAction<Error>) {
             state.loading = false
             state.error = action.payload.message
         }
     }
 })
 
-export default messageSlice.reducer
+export default messageChildSlice.reducer

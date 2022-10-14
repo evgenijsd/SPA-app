@@ -62,7 +62,7 @@ namespace SPA_app.API
 
             app.UseRouting();
 
-            app.UseCors(builder => builder.AllowAnyOrigin());
+            app.UseCors(builder => builder.AllowAnyHeader().AllowAnyOrigin());
 
             app.UseEndpoints(endpoints =>
             {

@@ -8,3 +8,18 @@ export interface IMessage {
     text: string
     created: Date
 }
+
+export interface ServerResponse<T> {
+    currentPage: number
+    totalPages: number
+    pageSize: number
+    totalCount: number
+
+    hasPrevious: boolean
+    hasNext: boolean
+
+    result: T[]
+  }
+
+export const ITEMS_PER_PAGE = 10
+export const PAGE_DEFAULT = 1

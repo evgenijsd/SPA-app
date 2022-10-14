@@ -1,9 +1,13 @@
 import { configureStore } from "@reduxjs/toolkit";
 import { combineReducers } from "redux";
 import messageReducer from './slices/messageSlice'
+import messageChildReducer from './slices/messageChildSlice'
+import addingReducer from './slices/addingSlice'
 
 const rootReducer = combineReducers({
     messageReducer,
+    messageChildReducer,
+    addingReducer
 })
 
 export function setupStore() {
