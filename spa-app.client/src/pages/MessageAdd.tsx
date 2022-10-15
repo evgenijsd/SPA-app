@@ -1,19 +1,22 @@
 import React, { FormEvent } from 'react';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
+import { MessageForm } from '../components/MessageForm';
 
 export function MessageAdd() {
     const params = useParams<'id'>()
+    const navigate = useNavigate()
     
     const submitHandler = (event: FormEvent) => {
         event.preventDefault()
     }
 
+    const clickHandler = () => navigate(-1)
+
     return (
-        <form className='container mx-auto pt-5 max-w-[500px]'
-            onSubmit={submitHandler}>
-            <h1>
-                 MessageAdd {params.id} 
-            </h1>
-        </form>
+        <>
+         <button onClick={clickHandler} className='px-2 my-2 mx-2 border border-indigo-700 mr-1 hover:shadow-md hover:bg-gray-500 hover:transition-all cursor-pointer'
+            >back</button>
+        <MessageForm key='adding' messageId={params.id!} />
+        </>
     )
 }

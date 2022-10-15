@@ -21,5 +21,5 @@ export interface ServerResponse<T> {
     result: T[]
   }
 
-export const ITEMS_PER_PAGE = 10
+export const ITEMS_PER_PAGE = 25
 export const PAGE_DEFAULT = 1

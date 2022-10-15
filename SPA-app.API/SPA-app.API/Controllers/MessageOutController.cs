@@ -73,6 +73,7 @@ namespace SPA_app.API.Controllers
 
             if (!result.IsValid)
             {
+                result.AddToModelState(this.ModelState);
                 return new BadRequestObjectResult(ModelState);
             }
             

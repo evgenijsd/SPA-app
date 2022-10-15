@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef } from 'react';
 import ReactPaginate from 'react-paginate';
 import { Messages } from '../components/Messages';
 import { useAppDispatch, useAppSelector } from '../hook/redux';
@@ -41,9 +41,9 @@ export function MainPage() {
                 { error && <p className='text-center text-lg text-red-600'>{error}</p>}
                 {
                     count > 0
-                        ? messages.map(message => <Messages key={message.id} message={message} />)
+                        ? messages.map(message => <Messages key={message.id} message={message} child={false}/>)
                         : <p className="text-center">No items</p>
-                }  
+                }                  
             </div>      
         </div>
     )

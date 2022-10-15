@@ -1,4 +1,4 @@
-import { AppDispatch } from "../index"
+import { AppDispatch, RootState } from "../index"
 import axios from "../../axios"
 import { IMessage, ITEMS_PER_PAGE, PAGE_DEFAULT, ServerResponse } from "../../models/models"
 import { messageSlice } from "../slices/messageSlice"
@@ -41,24 +41,21 @@ export const fetchChildMessages = (pageNumber: number = PAGE_DEFAULT, pageSize: 
     }
 }
 
-// export const createMessage = (id: string, message: string) => {
-//     return async (dispatch: AppDispatch, getState: () => RootState) => {
-//       try {
-//         const access = getState().authReducer.access
-//         await axios.post(`airports/${airportId}/comments`, {comment}, {
-//           headers: {
-//             Authorization: `Bearer ${access}`
-//           }
-//         })
-//         // todo: replace backend response
-//         dispatch(addingSlice.actions.addComment({
-//           user: {username: 'Vladilen'},
-//           created: '12.12.2022',
-//           message,
-//           id: Math.random()
-//         }))
-//       } catch (e) {
-//         console.log(e)
-//       }
-//     }
-//   }
+export const createMessage = (message: IMessage) => {
+    return async (dispatch: AppDispatch, getState: () => RootState) => {
+      try {
+        dispatch(addingSlice.actions.add())
+        const response = await axios.post<string>(`MessageOut/add`, message)
+        dispatch(addingSlice.actions.addMessage(response.data))
+      } catch (e) {
+        dispatch(addingSlice.actions.add())
+        dispatch(addingSlice.actions.addMessageError(e as Error))
+      }
+    }
+  }
+
+  export const clearCreate = () => {
+    return (dispatch: AppDispatch, getState: () => RootState) => {
+        dispatch(addingSlice.actions.add())        
+    }
+  }

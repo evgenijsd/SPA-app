@@ -1,36 +1,31 @@
-import {IMessage} from "../../models/models";
 import {createSlice, PayloadAction} from "@reduxjs/toolkit"
+import { NIL as NIL_UUID } from 'uuid';
 
 interface AddingState {
-  comments: IMessage[]
-  loading: boolean
   error: string
+  create: boolean
 }
 
 const initialState: AddingState = {
-  comments: [],
-  loading: false,
-  error: ''
+  error: '',
+  create: false
 }
 
 export const addingSlice = createSlice({
   name: 'adding',
   initialState,
   reducers: {
-    commentFetching(state) {
-      state.loading = true
-    },
-    commentFetchingSuccess(state, action: PayloadAction<IMessage[]>) {
-      state.loading = false
+    addMessage(state, action: PayloadAction<string>) {
+      state.create = action.payload !== NIL_UUID
       state.error = ''
-      state.comments = action.payload
     },
-    commentFetchingError(state, action: PayloadAction<Error>) {
-      state.loading = false
+    addMessageError(state, action: PayloadAction<Error>) {
+      state.create = false
       state.error = action.payload.message
-    },
-    addComment(state, action: PayloadAction<IMessage>) {
-      state.comments.push(action.payload)
+    }, 
+    add(state) {
+      state.create = false
+      state.error = ''
     }
   }
 })

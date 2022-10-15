@@ -12,10 +12,12 @@ function App() {
       <Routes>
         <Route path="/" element={<MainPage />} />
         <Route path="/message/:id" element={<MessageChain />} />
-        <Route path="/add/:id" element={<MessageAdd />} />
+        <Route path="/add/:id" element={<MessageAdd />} />        
       </Routes>
     </>
   );
 }
 
 export default App;
+
+

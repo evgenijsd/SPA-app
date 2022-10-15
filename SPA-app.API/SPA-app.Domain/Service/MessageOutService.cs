@@ -87,7 +87,7 @@ namespace SPA_app.Domain.Service
                 messageOut.Created = DateTime.Now;
 
                 message = messageOut.ToMessage();
-                var user = await Users.GetOneAsync(x => x.Name == messageOut.Name && x.Email == messageOut.Email);
+                var user = await Users.GetOneAsync(x => x.Name == messageOut.Name);
 
                 if (user != null)
                 {

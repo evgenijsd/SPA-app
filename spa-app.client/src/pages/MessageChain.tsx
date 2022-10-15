@@ -1,16 +1,14 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { useParams } from 'react-router-dom';
-import axios from '../axios';
+import React, { useEffect, useRef } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../hook/redux';
-import { IMessage, ITEMS_PER_PAGE, ServerResponse } from '../models/models';
+import { ITEMS_PER_PAGE } from '../models/models';
 import { fetchChildMessages } from '../store/actions/messageAction';
-import { NIL as NIL_UUID } from 'uuid';
 import ReactPaginate from 'react-paginate';
 import { Messages } from '../components/Messages';
 
 export function MessageChain() {
     const params = useParams<'id'>()
-    const id = params.id == undefined ? NIL_UUID : params.id 
+    const navigate = useNavigate()
 
     const dispatch = useAppDispatch()
     const page = useRef(1)
@@ -18,20 +16,21 @@ export function MessageChain() {
 
     const pageChangeHandler = ({ selected }: { selected: number }) => {
         page.current = selected + 1
-        dispatch(fetchChildMessages(page.current, ITEMS_PER_PAGE, id))
+        dispatch(fetchChildMessages(page.current, ITEMS_PER_PAGE, params.id!))
     }
 
+    const clickHandler = () => navigate(-1)
+
     useEffect( () => {
-        dispatch(fetchChildMessages(page.current, ITEMS_PER_PAGE, id))
-    }, [dispatch])
+        dispatch(fetchChildMessages(page.current, ITEMS_PER_PAGE, params.id!))
+    }, [dispatch, params.id])
 
     return (
-        // <div className='container mx-auto pt-5 max-w-[760px]'>
-        //     <h1>
-        //         MessageChain {params.id}
-        //     </h1>
-        // </div>
-        <div className='container mx-auto max-w-[760px] pt-5'>
+        <>
+        <button onClick={clickHandler} className='px-2 my-2 mx-2 border border-indigo-700 mr-1 hover:shadow-md hover:bg-gray-500 hover:transition-all cursor-pointer'
+            >back</button>
+        
+        <div className='container mx-auto max-w-[760px]'>
             { pageCount && <ReactPaginate
                 breakLabel="..."
                 nextLabel=">"
@@ -52,10 +51,11 @@ export function MessageChain() {
                 { error && <p className='text-center text-lg text-red-600'>{error}</p>}
                 {
                     count > 0
-                        ? messages.map(message => <Messages key={message.id} message={message} />)
+                        ? messages.map(message => <Messages key={message.id} message={message} child={true}/>)
                         : <p className="text-center">No items</p>
                 }  
             </div>      
         </div>
+        </>
     )
 }

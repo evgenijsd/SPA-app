@@ -1,6 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit"
 import { IMessage } from "../../models/models"
-import { NIL as NIL_UUID } from 'uuid';
 
 interface MessageChildState {
     loading: boolean
