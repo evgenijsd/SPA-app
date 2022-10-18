@@ -5,6 +5,7 @@ import App from './App';
 import { BrowserRouter } from 'react-router-dom';
 import { Provider } from 'react-redux';
 import { setupStore } from './store';
+import { ModalState } from './context/ModalContext';
 
 const store = setupStore()
 
@@ -15,7 +16,9 @@ const root = ReactDOM.createRoot(
 root.render(
   <Provider store={store}>
     <BrowserRouter>
-      <App />
+      <ModalState>
+        <App />
+      </ModalState>
     </BrowserRouter>
   </Provider>
     

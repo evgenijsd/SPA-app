@@ -7,6 +7,7 @@ export interface IMessage {
     homePage: string
     text: string
     created: Date
+    loadFile: string
 }
 
 export interface ServerResponse<T> {

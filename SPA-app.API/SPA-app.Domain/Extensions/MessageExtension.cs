@@ -27,6 +27,7 @@ namespace SPA_app.Domain.Extensions
                 UserId = Guid.Empty,
                 Text = message.Text,
                 Created = message.Created,
+                LoadFile = message.LoadFile
             };
         }
 
@@ -41,7 +42,8 @@ namespace SPA_app.Domain.Extensions
                 MessageId = message.MessageId,
                 Text = message.Text,
                 Created = message.Created,
-                Layer = layer
+                Layer = layer,
+                LoadFile = message.LoadFile
             };
         }
     }

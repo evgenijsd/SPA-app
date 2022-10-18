@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Text;
 
+#nullable enable
+
 namespace SPA_app.API.DTO
 {
     public class MessageDto
@@ -12,7 +14,9 @@ namespace SPA_app.API.DTO
 
         public Guid UserId { get; set; }
 
-        public string Text { get; set; }
+        public string Text { get; set; } = string.Empty;
+
+        public string? LoadFile { get; set; }
 
         public DateTime Created { get; set; }
     }

@@ -1,14 +1,10 @@
-import React, { FormEvent } from 'react';
+import React from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { MessageForm } from '../components/MessageForm';
 
 export function MessageAdd() {
     const params = useParams<'id'>()
     const navigate = useNavigate()
-    
-    const submitHandler = (event: FormEvent) => {
-        event.preventDefault()
-    }
 
     const clickHandler = () => navigate(-1)
 
