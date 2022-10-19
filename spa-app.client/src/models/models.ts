@@ -4,10 +4,11 @@ export interface IMessage {
     layer: number
     name: string
     email: string
-    homePage: string
+    homePage?: string
     text: string
     created: Date
-    loadFile: string
+    loadFile?: string
+    token: string
 }
 
 export interface ServerResponse<T> {

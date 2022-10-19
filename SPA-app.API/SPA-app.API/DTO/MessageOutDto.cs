@@ -26,5 +26,7 @@ namespace SPA_app.API.DTO
         public string? LoadFile { get; set; }
 
         public DateTime Created { get; set; }
+
+        public string Token { get; set; } = string.Empty;
     }
 }

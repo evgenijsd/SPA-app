@@ -49,16 +49,16 @@ export function Messages({ message, child }: MessagesProps) {
                     </p>
                     {imageCheck && <img src={message.loadFile} onClick={() => open()}
                         className="p-1 mx-auto mb-3 w-32 bg-white border rounded max-w-sm hover:shadow-md hover:bg-gray-500 hover:transition-all cursor-pointer" alt="..." /> }
-                    {textCheck && message.loadFile.includes('text') && <img src='../28878.png' onClick={() => open()}
+                    {textCheck && message.loadFile?.includes('text') && <img src='../28878.png' onClick={() => open()}
                         className="p-1 mx-auto mb-3 w-32 bg-white border rounded max-w-sm hover:shadow-md hover:bg-gray-500 hover:transition-all cursor-pointer" alt="..." /> }
                         
                 </div> 
             </div>
             {modal && imageCheck && <Modal onClose={close}>
-                <ViewImage image={message.loadFile}/> 
+                <ViewImage image={message.loadFile!}/> 
             </Modal> }
             {modal && textCheck && <Modal onClose={close}>
-                <ViewText textFile={message.loadFile}/> 
+                <ViewText textFile={message.loadFile!}/> 
             </Modal> }
         </div>
     )

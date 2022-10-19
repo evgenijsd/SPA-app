@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from 'react';
+import React, { useContext, useEffect, useRef } from 'react';
 import { FormEvent, useState } from 'react';
 import { useAppDispatch, useAppSelector } from '../hook/redux';
 import { IMessage } from '../models/models';
@@ -9,6 +9,8 @@ import { Modal } from './Modal';
 import { ModalContext } from '../context/ModalContext';
 import { ViewMessage } from './ViewMessage';
 import ReCAPTCHA from 'react-google-recaptcha';
+import { validationSchema } from '../validations/schema';
+import { ValidationError } from 'yup';
 
 interface MessageFormProps {
     messageId: string
@@ -24,7 +26,9 @@ export function MessageForm({messageId}: MessageFormProps) {
     const [preview, setPreview] = useState('')
     const [textCheck, setTextCheck] = useState(false)
     const [errorLoad, setErrorLoad] = useState<ProgressEvent<FileReader>>()
+    const [errorValidate, setErrorValidate] = useState<string[]>([])
     const {modal, open, close} = useContext(ModalContext)
+    const captchaRef = useRef<ReCAPTCHA>(null)
 
     const dispatch = useAppDispatch()
     const { error, create } = useAppSelector(state => state.addingReducer)
@@ -60,30 +64,36 @@ export function MessageForm({messageId}: MessageFormProps) {
       };
    }
 
-   function getMessage() {
-      const text64 = Buffer.from(text, 'utf8').toString('base64') 
-
-      const message: IMessage = {
+   function getMessage(): IMessage {
+      return {
         id: NIL_UUID,
         messageId: messageId,
         name:  name,
         email: email,
         homePage: homePage,
         layer: 0,
-        text: text64,
+        text: Buffer.from(text, 'utf8').toString('base64'),
         created: new Date(),
         loadFile: loadFile,
+        token: captchaRef.current?.getValue()!
       }
-      return message
    }
 
-    const submitHandler = (event: FormEvent<HTMLFormElement>) => {
+
+    const submitHandler = async (event: FormEvent<HTMLFormElement>) => {
       event.preventDefault()
 
-      const message = getMessage()
+       
+      const message = await validationSchema
+          .validate(getMessage())
+          .catch((e: ValidationError) => setErrorValidate(e.errors) )
 
-      dispatch(createMessage(message))
+      if (message) {
+        setErrorValidate([])
+        dispatch(createMessage(message))
+      }
     }
+
 
     return (
         <>
@@ -102,12 +112,12 @@ export function MessageForm({messageId}: MessageFormProps) {
           </div>
 
           <textarea
-            className="border py-2 mt-2 px-4 w-full outline-0 resize-none max-h-[500px]"
+            className="border py-2 mt-2 px-4 w-full outline-0 resize-none max-h-max"
             placeholder="Type your message here"
             onChange={e => setText(e.target.value)}
           />
 
-          <label className="block mb-1 mt-1 text-normal font-medium text-gray-900 dark:text-gray-300">Image file</label>
+          <label className="block mb-1 mt-1 text-normal font-medium text-gray-900 dark:text-gray-300">Load file(image/text)</label>
           <div className='border form-control block w-full px-3 py-1.5 mb-3'>
             <label htmlFor="selectFile" className="w-full hover:bg-gray-500 hover:text-white hover:transition-all">{ `Select: ${selectFile?.name!}` }</label>
             <input type="file" id="selectFile"
@@ -116,12 +126,14 @@ export function MessageForm({messageId}: MessageFormProps) {
           {selectFile && !textCheck && <img src={preview} className="p-1 mx-auto mb-3 w-52 bg-white border rounded max-w-sm" alt="..." /> }
           {selectFile && textCheck && <img src='../28878.png' className="p-1 mx-auto mb-3 w-52 bg-white border rounded max-w-sm" alt="..." /> }
 
-          { errorLoad && <p className='text-center text-lg'>Loading error</p>}
+          { errorLoad && <p className='text-center text-lg text-red-600'>Loading error</p>}
+          { errorValidate && <p className='text-center text-lg text-red-600'>{errorValidate[0]}</p>}
           { create && <p className='text-center text-lg'>The message is created</p>}
           { error && <p className='text-center text-lg text-red-600'>{error}</p>}
+
           
-          <ReCAPTCHA sitekey={process.env.REACT_APP_SITE_KEY!} />
-          <div className='flex'>
+          <ReCAPTCHA sitekey={process.env.REACT_APP_SITE_KEY!} ref={captchaRef} />
+          <div className='flex mt-3'>
               <button type="submit"
               className="border py-2 px-4 mr-1 flex-auto hover:bg-gray-500 hover:text-white hover:transition-all"
               >Create</button>

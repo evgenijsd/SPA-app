@@ -45,6 +45,9 @@ namespace SPA_app.API
             services.AddValidatorsFromAssemblyContaining<MessageOutValidator>();
             ValidatorOptions.Global.LanguageManager.Enabled = false;
 
+            services.AddScoped(typeof(ICaptchaValidator), typeof(ReCaptchaValidator));
+            services.AddHttpClient();
+
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "SpaBase.API", Version = "v1" });

@@ -12,7 +12,7 @@ export function ViewMessage({ message }: MessagesProps) {
     const textCheck = message.loadFile ? message.loadFile.includes('text') : false 
 
     return (
-        <div className='container mx-auto max-w-[760px] pt-5'>
+        <div className='container mx-auto max-w-[760px] min-w-[760px] pt-5'>
             <div className='flex'>
                 <div className='flex-initial text-7xl text-white'>
                     { "".padStart(message.layer, "*") }
@@ -31,7 +31,7 @@ export function ViewMessage({ message }: MessagesProps) {
                         </p>
                         {imageCheck && <img src={message.loadFile} 
                             className="p-1 mx-auto mb-3 w-32 bg-white border rounded max-w-sm" alt="..." /> }
-                        {textCheck && message.loadFile.includes('text') && <img src='../28878.png' 
+                        {textCheck && message.loadFile?.includes('text') && <img src='../28878.png' 
                             className="p-1 mx-auto mb-3 w-32 bg-white border rounded max-w-sm" alt="..." /> }
                     </div> 
 

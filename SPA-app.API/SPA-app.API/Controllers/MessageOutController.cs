@@ -25,17 +25,20 @@ namespace SPA_app.API.Controllers
         private readonly IMessageOutService<MessageOutDto> _messageService;
         private readonly IGenericService<User, UserDto> _userService;
         private readonly ILogger<MessageOutController> _logger;
+        private ICaptchaValidator _captchaValidator;
 
         public MessageOutController(
             IMessageOutService<MessageOutDto> messageService,
             IGenericService<User, UserDto> userService,
             IValidator<MessageOutDto> validator,
-            ILogger<MessageOutController> logger)
+            ILogger<MessageOutController> logger,
+            ICaptchaValidator captchaValidator)
         {
             _messageService = messageService;
             _userService = userService;
             _validator = validator;
             _logger = logger;
+            _captchaValidator = captchaValidator;
         }
 
         [HttpGet("all")]
@@ -76,7 +79,13 @@ namespace SPA_app.API.Controllers
                 result.AddToModelState(this.ModelState);
                 return new BadRequestObjectResult(ModelState);
             }
-            
+
+            if (!await _captchaValidator.IsCaptchaPassedAsync(data.Token))
+            {
+                ModelState.AddModelError("", "Captcha validation failed");
+                return new BadRequestObjectResult(ModelState);
+            }
+
             var id = await _messageService.AddAsync(data);
             return Created($"{id}", id);
         }
