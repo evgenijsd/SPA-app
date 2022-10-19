@@ -1,5 +1,7 @@
 ﻿using System;
 
+#nullable enable
+
 namespace SPA_app.Domain.Entities
 {
     public class MessageOut
@@ -10,13 +12,15 @@ namespace SPA_app.Domain.Entities
 
         public int Layer { get; set; }
 
-        public string Name { get; set; }
+        public string Name { get; set; } = string.Empty;
 
-        public string Email { get; set; }
+        public string Email { get; set; } = string.Empty;
 
-        public string HomePage { get; set; }
+        public string HomePage { get; set; } = string.Empty;
 
-        public string Text { get; set; }
+        public string Text { get; set; } = string.Empty;
+
+        public string? LoadFile { get; set; }
 
         public DateTime Created { get; set; }
     }

@@ -1,5 +1,4 @@
 using FluentValidation;
-using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -7,7 +6,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
-using SPA_app.API.DTO;
 using SPA_app.API.Validators;
 using SPA_app.DataAccess;
 using SPA_app.Domain.Interface;
@@ -29,11 +27,11 @@ namespace SPA_app.API
         [System.Obsolete]
         public void ConfigureServices(IServiceCollection services)
         {
-            services
-                .AddControllers();
-                //.AddFluentValidation(fvc => 
-                //    fvc.RegisterValidatorsFromAssemblyContaining<MessageOutValidator>()
-                //);
+            services.AddControllers();
+            //.AddFluentValidation(fvc => 
+            //    fvc.RegisterValidatorsFromAssemblyContaining<MessageOutValidator>()
+            //);
+            services.AddCors();
 
             services.AddDbContext<ConnectionBaseContext>(options =>
                 options
@@ -47,9 +45,12 @@ namespace SPA_app.API
             services.AddValidatorsFromAssemblyContaining<MessageOutValidator>();
             ValidatorOptions.Global.LanguageManager.Enabled = false;
 
+            services.AddScoped(typeof(ICaptchaValidator), typeof(ReCaptchaValidator));
+            services.AddHttpClient();
+
             services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "ConnectionBase.API", Version = "v1" });
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = "SpaBase.API", Version = "v1" });
             });
         }
 
@@ -63,6 +64,8 @@ namespace SPA_app.API
             }
 
             app.UseRouting();
+
+            app.UseCors(builder => builder.AllowAnyHeader().AllowAnyOrigin());
 
             app.UseEndpoints(endpoints =>
             {

@@ -1,6 +1,8 @@
-﻿using SPA_app.Domain.Interface;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Query;
+using SPA_app.Domain.Helpers;
+using SPA_app.Domain.Interface;
+using SPA_app.Domain.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -44,6 +46,25 @@ namespace SPA_app.DataAccess.Repositories
             }
 
             return query.FirstOrDefaultAsync();
+        }
+
+        public virtual Task<List<T>> GetAllAsync(
+            Expression<Func<T, bool>> expression,                         
+            PageParameters pageParameters,
+            ref int count,
+            Func<IQueryable<T>, IIncludableQueryable<T, object>> include = null)
+        {
+            IQueryable<T> query = _entities.Where(expression);
+            count = query.Count();
+            query = query.Skip((pageParameters.PageNumber - 1) * pageParameters.PageSize)
+                .Take(pageParameters.PageSize);
+
+            if (include != null)
+            {
+                query = include(query);
+            }
+
+            return query.ToListAsync();
         }
 
         public virtual Task<List<T>> GetAllAsync(Func<IQueryable<T>, IIncludableQueryable<T, object>> include = null)

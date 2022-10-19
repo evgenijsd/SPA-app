@@ -3,10 +3,14 @@ using FluentValidation;
 using FluentValidation.Results;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using SPA_app.API.DTO;
+using SPA_app.API.Pagination;
 using SPA_app.API.Validators;
 using SPA_app.Domain.Entities;
+using SPA_app.Domain.Helpers;
 using SPA_app.Domain.Interface;
+using SPA_app.Domain.Models;
 using SPA_app.Domain.Service.Interface;
 using System;
 using System.Threading.Tasks;
@@ -21,39 +25,44 @@ namespace SPA_app.API.Controllers
         private readonly IMessageOutService<MessageOutDto> _messageService;
         private readonly IGenericService<User, UserDto> _userService;
         private readonly ILogger<MessageOutController> _logger;
+        private ICaptchaValidator _captchaValidator;
 
         public MessageOutController(
             IMessageOutService<MessageOutDto> messageService,
             IGenericService<User, UserDto> userService,
             IValidator<MessageOutDto> validator,
-            ILogger<MessageOutController> logger)
+            ILogger<MessageOutController> logger,
+            ICaptchaValidator captchaValidator)
         {
             _messageService = messageService;
             _userService = userService;
             _validator = validator;
             _logger = logger;
+            _captchaValidator = captchaValidator;
         }
 
         [HttpGet("all")]
         [ActionName("all")]
-        public async Task<IActionResult> Get()
+        public async Task<IActionResult> Get([FromQuery]PageParameters pageParameters)
         {
-            var result = await _messageService.GetAllAsync();
+            var result = await _messageService.GetAllAsync(pageParameters);
             if (result == null)
                 return NotFound();
-            return Ok(result);
+
+            return Ok(result.ToOut());
         }
 
         [HttpGet("{id}")]
         [ActionName("id")]
-        public async Task<IActionResult> GetByIdAsync(Guid id)
+        public async Task<IActionResult> GetByIdAsync(Guid id, [FromQuery] PageParameters pageParameters)
         {
             if (id == Guid.Empty)
                 return BadRequest();
-            var result = await _messageService.GetByIdAsync(id);
+            var result = await _messageService.GetByIdAsync(id, pageParameters);
             if (result == null)
                 return NotFound();
-            return Ok(result);
+
+            return Ok(result.ToOut());
         }
 
         [HttpPost("add")]
@@ -67,11 +76,16 @@ namespace SPA_app.API.Controllers
 
             if (!result.IsValid)
             {
-                //result.AddToModelState(this.ModelState);
-
+                result.AddToModelState(this.ModelState);
                 return new BadRequestObjectResult(ModelState);
             }
-            
+
+            if (!await _captchaValidator.IsCaptchaPassedAsync(data.Token))
+            {
+                ModelState.AddModelError("", "Captcha validation failed");
+                return new BadRequestObjectResult(ModelState);
+            }
+
             var id = await _messageService.AddAsync(data);
             return Created($"{id}", id);
         }
