@@ -16,6 +16,9 @@ interface MessageFormProps {
     messageId: string
 }
 
+const MAX_WIDTH = 320
+const MAX_HEIGHT = 240
+
 export function MessageForm({messageId}: MessageFormProps) {
     const [text, setText] = useState('')
     const [name, setName] = useState('')
@@ -25,6 +28,7 @@ export function MessageForm({messageId}: MessageFormProps) {
     const [selectFile, setFile] = useState<File>()
     const [preview, setPreview] = useState('')
     const [textCheck, setTextCheck] = useState(false)
+    const [errorSize, setErrorSize] = useState(false)
     const [errorLoad, setErrorLoad] = useState<ProgressEvent<FileReader>>()
     const [errorValidate, setErrorValidate] = useState<string[]>([])
     const {modal, open, close} = useContext(ModalContext)
@@ -46,18 +50,43 @@ export function MessageForm({messageId}: MessageFormProps) {
 
       if ( /.(jpg|png|gif|txt)\b/.test( file.name ) && /(image|text)\b/.test( file.type )) {
         setFile(file)
+        if (file.type.includes('text') && file.size > 102400) { setErrorSize(true); }
         setPreview(URL.createObjectURL(file))
         setTextCheck(file.name.includes('txt'))
         getBase64(file)
-        console.log(loadFile)
       }      
     }
 
     function getBase64(file: File) {
-      var reader = new FileReader();
+      let reader = new FileReader();
       reader.readAsDataURL(file);
-      reader.onload = function () {
-        setLoadFile(reader.result?.toString()!)
+      reader.onload = function (e) {
+        if (file.type.includes('image')){
+          const img = new Image()
+          img.src = e.target?.result?.toString()!
+          img.onload = () => {
+            const elem = document.createElement('canvas')
+            const scaleWidth = img.width > MAX_WIDTH ? MAX_WIDTH / img.width : 1
+            const scaleHeight = img.height > MAX_HEIGHT ? MAX_HEIGHT / img.height : 1
+            const scaleFactor = scaleWidth > scaleHeight ? scaleHeight : scaleWidth
+            console.log(scaleFactor)
+            if (scaleFactor !== 1) {
+              elem.width = img.width * scaleFactor
+              elem.height = img.height * scaleFactor
+
+              const ctx = elem.getContext('2d')
+              ctx?.drawImage(img, 0, 0, img.width * scaleFactor, img.height * scaleFactor)
+
+              setLoadFile(ctx?.canvas.toDataURL('image/jpeg', 1).toString()!)
+            }
+            else {
+              setLoadFile(e.target?.result?.toString()!)
+            }             
+          }
+        }
+        else {
+          setLoadFile(e.target?.result?.toString()!)
+        }        
       };
       reader.onerror = function (error) {
         setErrorLoad(error)
@@ -90,6 +119,8 @@ export function MessageForm({messageId}: MessageFormProps) {
 
       if (message) {
         setErrorValidate([])
+        setErrorSize(false)
+        setErrorLoad(undefined)
         dispatch(createMessage(message))
       }
     }
@@ -127,6 +158,7 @@ export function MessageForm({messageId}: MessageFormProps) {
           {selectFile && textCheck && <img src='../28878.png' className="p-1 mx-auto mb-3 w-52 bg-white border rounded max-w-sm" alt="..." /> }
 
           { errorLoad && <p className='text-center text-lg text-red-600'>Loading error</p>}
+          { errorSize && <p className='text-center text-lg text-red-600'>File is too big</p>}
           { errorValidate && <p className='text-center text-lg text-red-600'>{errorValidate[0]}</p>}
           { create && <p className='text-center text-lg'>The message is created</p>}
           { error && <p className='text-center text-lg text-red-600'>{error}</p>}
