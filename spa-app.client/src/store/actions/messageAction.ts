@@ -45,7 +45,6 @@ export const createMessage = (message: IMessage) => {
     return async (dispatch: AppDispatch, getState: () => RootState) => {
       try {
         dispatch(addingSlice.actions.add())
-        console.log(message)
         const response = await axios.post<string>(`MessageOut/add`, message)
         dispatch(addingSlice.actions.addMessage(response.data))
       } catch (e) {

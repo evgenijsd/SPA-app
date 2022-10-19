@@ -1,10 +1,14 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../hook/redux';
 import { ITEMS_PER_PAGE } from '../models/models';
 import { fetchChildMessages } from '../store/actions/messageAction';
 import ReactPaginate from 'react-paginate';
 import { Messages } from '../components/Messages';
+import { ModalContext } from '../context/ModalContext';
+import { Modal } from '../components/Modal';
+import { ViewText } from '../components/ViewText';
+import { ViewImage } from '../components/ViewImage';
 
 export function MessageChain() {
     const params = useParams<'id'>()
@@ -13,10 +17,21 @@ export function MessageChain() {
     const dispatch = useAppDispatch()
     const page = useRef(1)
     const { error, loading, messages, pageCount, count } = useAppSelector(state => state.messageChildReducer)
+    const {modal, open, close} = useContext(ModalContext) 
+    const [loadFile, setLoadFile] = useState('')
+    const [imageCheck, setImageCheck] = useState(false)
+    const [textCheck, setTextCheck] = useState(false)
 
     const pageChangeHandler = ({ selected }: { selected: number }) => {
         page.current = selected + 1
         dispatch(fetchChildMessages(page.current, ITEMS_PER_PAGE, params.id!))
+    }
+
+    const updateData = (loadFile: string, imageCheck: boolean, textCheck: boolean) => {
+        setLoadFile(loadFile)
+        setImageCheck(imageCheck)
+        setTextCheck(textCheck)
+        open()
     }
 
     const clickHandler = () => navigate(-1)
@@ -51,11 +66,18 @@ export function MessageChain() {
                 { error && <p className='text-center text-lg text-red-600'>{error}</p>}
                 {
                     count > 0
-                        ? messages.map(message => <Messages key={message.id} message={message} child={true}/>)
+                        ? messages.map(message => <Messages key={message.id} message={message} child={true} updateData={updateData}/>)
                         : <p className="text-center">No items</p>
                 }  
             </div>      
         </div>
+
+        {modal && imageCheck && <Modal onClose={close}>
+                <ViewImage image={loadFile!}/> 
+            </Modal> }
+            {modal && textCheck && <Modal onClose={close}>
+                <ViewText textFile={loadFile!}/> 
+        </Modal> } 
         </>
     )
 }

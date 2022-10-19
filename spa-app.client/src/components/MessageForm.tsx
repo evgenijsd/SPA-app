@@ -69,7 +69,6 @@ export function MessageForm({messageId}: MessageFormProps) {
             const scaleWidth = img.width > MAX_WIDTH ? MAX_WIDTH / img.width : 1
             const scaleHeight = img.height > MAX_HEIGHT ? MAX_HEIGHT / img.height : 1
             const scaleFactor = scaleWidth > scaleHeight ? scaleHeight : scaleWidth
-            console.log(scaleFactor)
             if (scaleFactor !== 1) {
               elem.width = img.width * scaleFactor
               elem.height = img.height * scaleFactor
