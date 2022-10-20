@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { StrictMode } from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
 import App from './App';
@@ -17,7 +17,9 @@ root.render(
   <Provider store={store}>
     <BrowserRouter>
       <ModalState>
-        <App />
+        <StrictMode>
+          <App />
+        </StrictMode>
       </ModalState>
     </BrowserRouter>
   </Provider>
