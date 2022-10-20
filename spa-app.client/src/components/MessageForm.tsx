@@ -9,8 +9,10 @@ import { Modal } from './Modal';
 import { ModalContext } from '../context/ModalContext';
 import { ViewMessage } from './ViewMessage';
 import ReCAPTCHA from 'react-google-recaptcha';
-import { validationSchema } from '../validations/schema';
+import { isValidHtml, validationSchema } from '../validations/schema';
 import { ValidationError } from 'yup';
+import ReactQuill, { Quill } from 'react-quill';
+import 'react-quill/dist/quill.snow.css'
 
 interface MessageFormProps {
     messageId: string
@@ -28,11 +30,17 @@ export function MessageForm({messageId}: MessageFormProps) {
     const [selectFile, setFile] = useState<File>()
     const [preview, setPreview] = useState('')
     const [textCheck, setTextCheck] = useState(false)
+    const [textValid, setTextValid] = useState(true)
     const [errorSize, setErrorSize] = useState(false)
     const [errorLoad, setErrorLoad] = useState<ProgressEvent<FileReader>>()
     const [errorValidate, setErrorValidate] = useState<string[]>([])
     const {modal, open, close} = useContext(ModalContext)
     const captchaRef = useRef<ReCAPTCHA>(null)
+    
+    const handleEditorChange = (content: string) => {      
+      setText(content)
+      setTextValid(true)
+    };
 
     const dispatch = useAppDispatch()
     const { error, create } = useAppSelector(state => state.addingReducer)
@@ -40,6 +48,9 @@ export function MessageForm({messageId}: MessageFormProps) {
 
     useEffect( () => {
         dispatch(clearCreate())
+        var italic = Quill.import('formats/italic')
+        italic.tagName = 'i'
+        Quill.register(italic, true)
     }, [dispatch])
 
     const handleFileInput = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -110,13 +121,14 @@ export function MessageForm({messageId}: MessageFormProps) {
 
     const submitHandler = async (event: FormEvent<HTMLFormElement>) => {
       event.preventDefault()
-
+      const isValid = isValidHtml(text)
+      setTextValid(isValid)
        
       const message = await validationSchema
           .validate(getMessage())
           .catch((e: ValidationError) => setErrorValidate(e.errors) )
 
-      if (message) {
+      if (message && isValid) {
         setErrorValidate([])
         setErrorSize(false)
         setErrorLoad(undefined)
@@ -141,11 +153,16 @@ export function MessageForm({messageId}: MessageFormProps) {
                   onChange={e => setHomePage(e.target.value)} />
           </div>
 
-          <textarea
-            className="border py-2 mt-2 px-4 w-full outline-0 resize-none max-h-max"
-            placeholder="Type your message here"
-            onChange={e => setText(e.target.value)}
-          />
+          <div>
+            <ReactQuill 
+              theme="snow"
+              value={text}
+              placeholder="Type your message here..."
+              modules={{
+                toolbar: ['bold', 'italic', 'code', 'link'],
+              }} 
+              onChange={handleEditorChange}/>
+          </div>
 
           <label className="block mb-1 mt-1 text-normal font-medium text-gray-900 dark:text-gray-300">Load file(image/text)</label>
           <div className='border form-control block w-full px-3 py-1.5 mb-3'>
@@ -161,6 +178,7 @@ export function MessageForm({messageId}: MessageFormProps) {
           { errorValidate && <p className='text-center text-lg text-red-600'>{errorValidate[0]}</p>}
           { create && <p className='text-center text-lg'>The message is created</p>}
           { error && <p className='text-center text-lg text-red-600'>{error}</p>}
+          { !textValid && <p className='text-center text-lg text-red-600'>Tex is not valid</p>}
 
           
           <ReCAPTCHA sitekey={process.env.REACT_APP_SITE_KEY!} ref={captchaRef} />

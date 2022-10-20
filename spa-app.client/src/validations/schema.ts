@@ -11,5 +11,24 @@ export const validationSchema: Yup.SchemaOf<IMessage> = Yup.object().shape({
     text: Yup.string().required('text is required'),
     created: Yup.date().required('date is required'),
     loadFile: Yup.string().optional(),
-    token: Yup.string().required('failed to check Captcha'),
+    token: Yup.string().required('failed to check Captcha'),    
 })
+
+export const isValidHtml = function(text: string): boolean {    
+  
+    const regTags: RegExp[] = [
+        /<a\b[^>]*>(.*?)<\/a>/igm, 
+        /<strong\b[^>]*>(.*?)<\/strong>/igm,
+        /<i\b[^>]*>(.*?)<\/i>/igm,
+        /<code\b[^>]*>(.*?)<\/code>/igm,
+        /<p\b[^>]*>(.*?)<\/p>/igm,
+        /<br\b[^>]*>(.*?)<\/br>/igm
+    ]
+
+    const countTags = /<("[^"]*"|'[^']*'|[^'">])*>/igm
+
+    let countValidTags = 0;
+    regTags.forEach(x => { const n = text.match(x)?.length ; countValidTags += n ? n : 0 })
+
+    return countValidTags === (text.match(countTags)?.length! / 2)
+};
