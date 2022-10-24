@@ -23,6 +23,15 @@ namespace SPA_app.Domain.Models
             }
         }
 
-        public ESortingMessagesType SortingType { get; set; }
+        public ESortingMessagesType SortingType { get; set; } = ESortingMessagesType.ByDate;
+    }
+
+    public static class PageSettings
+    {
+        public static ESortingMessagesType SortingType { get; set; }
+
+        public static bool Direction { get; set; }
+
+        public static int PageNumber { get; set; } = 1;
     }
 }

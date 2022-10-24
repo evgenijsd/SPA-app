@@ -11,9 +11,4 @@ namespace SPA_app.Domain.Enums
         ByEmail,
         ByDate        
     }
-
-    public static class Sort
-    {
-        public static ESortingMessagesType SortingType { get; set; }
-    }
 }

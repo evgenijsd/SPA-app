@@ -22,6 +22,8 @@ export function MainPage() {
     const pageChangeHandler = ({ selected }: { selected: number }) => {
         page.current = selected + 1
         dispatch(fetchMessages(page.current, ITEMS_PER_PAGE, sortType))
+        console.log('1')
+        console.log(sortType)
     }
 
     const updateData = (loadFile: string, imageCheck: boolean, textCheck: boolean) => {
@@ -33,11 +35,15 @@ export function MainPage() {
 
     useEffect( () => {
         dispatch(fetchMessages(page.current, ITEMS_PER_PAGE, sortType))
+        console.log('2')
+        console.log(sortType)
     }, [dispatch, sortType])
 
-    const sortChangeHandler = (sort: ESortingMessagesType) => {
-        setSortType(sort);
+    const sortChangeHandler = (sort: ESortingMessagesType) => {        
         if (sort === sortType) dispatch(fetchMessages(page.current, ITEMS_PER_PAGE, sortType))
+        else setSortType(sort);
+        console.log('3')
+        console.log(sortType)
     }
 
     return (
