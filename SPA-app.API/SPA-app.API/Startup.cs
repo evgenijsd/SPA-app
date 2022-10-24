@@ -28,9 +28,6 @@ namespace SPA_app.API
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
-            //.AddFluentValidation(fvc => 
-            //    fvc.RegisterValidatorsFromAssemblyContaining<MessageOutValidator>()
-            //);
             services.AddCors();
 
             services.AddDbContext<ConnectionBaseContext>(options =>

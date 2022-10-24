@@ -11,6 +11,13 @@ export interface IMessage {
     token: string
 }
 
+export enum ESortingMessagesType {
+    None,
+    ByName,
+    ByEmail,
+    ByDate,    
+}
+
 export interface ServerResponse<T> {
     currentPage: number
     totalPages: number
