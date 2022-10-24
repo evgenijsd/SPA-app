@@ -1,4 +1,5 @@
-﻿using SPA_app.Domain.Helpers;
+﻿using SPA_app.Domain.Enums;
+using SPA_app.Domain.Helpers;
 using SPA_app.Domain.Models;
 using System;
 using System.Collections.Generic;

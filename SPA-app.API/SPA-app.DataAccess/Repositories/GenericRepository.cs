@@ -48,16 +48,9 @@ namespace SPA_app.DataAccess.Repositories
             return query.FirstOrDefaultAsync();
         }
 
-        public virtual Task<List<T>> GetAllAsync(
-            Expression<Func<T, bool>> expression,                         
-            PageParameters pageParameters,
-            ref int count,
-            Func<IQueryable<T>, IIncludableQueryable<T, object>> include = null)
+        public virtual Task<List<T>> GetAllAsync(Expression<Func<T, bool>> expression, Func<IQueryable<T>, IIncludableQueryable<T, object>> include = null)
         {
             IQueryable<T> query = _entities.Where(expression);
-            count = query.Count();
-            query = query.Skip((pageParameters.PageNumber - 1) * pageParameters.PageSize)
-                .Take(pageParameters.PageSize);
 
             if (include != null)
             {

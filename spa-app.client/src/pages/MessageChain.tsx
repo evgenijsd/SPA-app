@@ -41,11 +41,10 @@ export function MessageChain() {
     }, [dispatch, params.id])
 
     return (
-        <>
-        <button onClick={clickHandler} className='px-2 my-2 mx-2 border border-indigo-700 mr-1 hover:shadow-md hover:bg-gray-500 hover:transition-all cursor-pointer'
-            >back</button>
-        
+        <>      
         <div className='container mx-auto max-w-[760px]'>
+            <button onClick={clickHandler} className='px-2 my-2 mx-2 border border-indigo-700 mr-1 hover:shadow-md hover:bg-gray-500 hover:transition-all cursor-pointer'
+                >back</button>
             { pageCount && <ReactPaginate
                 breakLabel="..."
                 nextLabel=">"

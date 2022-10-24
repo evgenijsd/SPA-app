@@ -1,16 +1,19 @@
 import { AppDispatch, RootState } from "../index"
 import axios from "../../axios"
-import { IMessage, ITEMS_PER_PAGE, PAGE_DEFAULT, ServerResponse } from "../../models/models"
+import { ESortingMessagesType, IMessage, ITEMS_PER_PAGE, PAGE_DEFAULT, ServerResponse } from "../../models/models"
 import { messageSlice } from "../slices/messageSlice"
 import { messageChildSlice } from "../slices/messageChildSlice"
 import { addingSlice } from "../slices/addingSlice"
 
-export const fetchMessages = (pageNumber: number = PAGE_DEFAULT, pageSize: number = ITEMS_PER_PAGE) => {
+export const fetchMessages = (
+        pageNumber: number = PAGE_DEFAULT, 
+        pageSize: number = ITEMS_PER_PAGE, 
+        sortingType: ESortingMessagesType = ESortingMessagesType.None) => {
     return async (dispatch: AppDispatch) => {
         try {
             dispatch(messageSlice.actions.fetching())
             const response = await axios.get<ServerResponse<IMessage>>('MessageOut/all', {
-                params: { pageNumber, pageSize }
+                params: { pageNumber, pageSize, sortingType }
             })
             dispatch(messageSlice.actions.fetchingSuccess( {
                 messages: response.data.result,

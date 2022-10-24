@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SPA_app.Domain.Enums;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -21,5 +22,7 @@ namespace SPA_app.Domain.Models
                 _pageSize = (value > maxPageSize) ? maxPageSize : value;
             }
         }
+
+        public ESortingMessagesType SortingType { get; set; }
     }
 }
