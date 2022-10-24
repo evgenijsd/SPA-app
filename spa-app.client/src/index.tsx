@@ -17,9 +17,7 @@ root.render(
   <Provider store={store}>
     <BrowserRouter>
       <ModalState>
-        <StrictMode>
           <App />
-        </StrictMode>
       </ModalState>
     </BrowserRouter>
   </Provider>

@@ -7,7 +7,6 @@ using SPA_app.Domain.Helpers;
 using SPA_app.Domain.Interface;
 using SPA_app.Domain.Models;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -44,18 +43,31 @@ namespace SPA_app.Domain.Service
                 _ => x => x.Created,
             };
 
-            if (Sort.SortingType == ESortingMessagesType.None || Sort.SortingType != pageParameters.SortingType) 
+            if (PageSettings.SortingType == pageParameters.SortingType && 
+                PageSettings.PageNumber == pageParameters.PageNumber &&
+                pageParameters.SortingType != ESortingMessagesType.None)
+            {
+                PageSettings.Direction = !PageSettings.Direction;
+            }
+            else if (
+                PageSettings.SortingType != pageParameters.SortingType ||
+                pageParameters.SortingType == ESortingMessagesType.None)
+            {
+                 PageSettings.Direction = true;
+            }
+
+            if (PageSettings.Direction)
             {
                 messagesOut = messages.Select(x => x.ToOut()).OrderBy(sortingSelector).ToList();
-                Sort.SortingType = pageParameters.SortingType;
             }
             else
             {
                 messagesOut = messages.Select(x => x.ToOut()).OrderByDescending(sortingSelector).ToList();
-                Sort.SortingType = ESortingMessagesType.None;
             }
 
             int count = messagesOut.Count();
+            PageSettings.SortingType = pageParameters.SortingType;
+            PageSettings.PageNumber = pageParameters.PageNumber;
 
             var config = new MapperConfiguration(cfg => cfg.CreateMap<MessageOut, Tdto>());
             var mapper = new Mapper(config);

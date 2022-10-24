@@ -22,5 +22,7 @@
     <ProjectReference Include="..\SPA-app.Domain\SPA-app.Domain.csproj" />
   </ItemGroup>
 
+  <ProjectExtensions><VisualStudio><UserProperties appsettings_1json__JsonSchema="" /></VisualStudio></ProjectExtensions>
+
 
 </Project>
