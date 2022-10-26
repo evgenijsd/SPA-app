@@ -1,30 +1,30 @@
 # SPA-app
 
-Проект по работе с сообщениями
+Project for work with messages
 
-Возможности
+Capabilities
 
-1.	Просмотр списка корневых сообщений – “Message”
-2.	Просмотр цепочек ответов на корневые сообщения – нажатие на заголовок
-3.	Добавление сообщения – “Add”
-4.	Добавление сообщения – ответа на сообщение (“reply”)
-5. Сортировка по name, e-mail, date
+1.	View the list of root messages – “Message”
+2.	View chains of answers to root messages – pressing for the heading
+3.	Adding a message – “Add”
+4.	Adding a message - response to a message (“reply”)
+5. Sorting by name, e-mail, date
 
-Установка
+Installation
 
-Сервер (web-api)
+Server (Web-Api)
 
-1.	Установить IIS
-2.	Опубликовать в Visual Studio проект и перенести на сервер
-3.	Установить MSSQL подключить пользователя sa с паролем
-4.	Настроить IIS под установку web-api и создать сайт с путем к проекту
-5.	Установить windows server hosting
-6.	В файле appsettings.json указать пользователя и пароль для доступа к базе
+1.	Install IIS
+2.	Publish a project in Visual Studio and transfer to the server
+3.	Install MSSQL connect a sa user with a password
+4.	Configure IIS for installing web-api and create a site with the path to the project
+5.	Install windows server hosting
+6.	In the appsettings.json file specify the user and password for access to the database
 
-Клиент (react)
+Frontend (react)
 
-1.	В файле .env указываем адрес и порт сервера
-2.	Указываем в панели управления reCAPTCHA адрес сайта и вносим ключи в .env файл и appsetting.json
-3.	Сборка – npm run build
-4.	Переносим на сервер
-5.	Настраиваем на папку сборки
+1.	In the .env file indicate the address and port of the server
+2.	Specify the site address in the reCAPTCHA control panel and make the keys to the .env file and appsetting.json
+3.	Assembly – npm run build
+4.	Transfer to the server
+5.	We set up on the assembly folder
